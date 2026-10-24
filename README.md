@@ -115,7 +115,31 @@ Cluster 2 is the higher-income, higher-spending, child-free group that buys thro
 
 ## Comparison: real MSME data versus public datasets
 
-Reviewers asked for comparison datasets. RH-MVECC was therefore run, unchanged, on (i) six public labelled benchmarks (Tables 22–23 of the manuscript) and (ii) the public, unlabelled marketing data. The table puts the real MSME data and the marketing data side by side.
+Reviewers asked for comparison datasets. RH-MVECC was therefore run, unchanged, on (i) six public labelled benchmarks (Tables 22–23 of the manuscript) and (ii) the public, unlabelled marketing data.
+
+### Which dataset gives the better result?
+
+**The real MSME data.** Its clusters are better separated and more stable than those of the public marketing data on 5 of the 6 measures; only VDI is lower on the marketing data.
+
+| Measure | MSME (real) | Marketing (public) | Better |
+|---|---|---|---|
+| SC (higher is better) | 0.3885 | 0.2179 | MSME |
+| DBI (lower is better) | 1.0251 | 1.7534 | MSME |
+| CHI (higher is better) | 1233.99 | 690.93 | MSME |
+| Stability, ARI (50 re-runs) | 0.9900 | 0.9495 | MSME |
+| Stability, NMI (50 re-runs) | 0.9817 | 0.9228 | MSME |
+| VDI (lower is better) | 0.7823 | 0.7039 | Marketing |
+
+Reasons:
+
+1. **Better separation.** By the common rule of thumb for the silhouette coefficient, SC below about 0.25 means no substantial cluster structure and 0.26-0.50 a weak-to-moderate one: marketing (0.2179) falls in the first group, MSME (0.3885) in the second. DBI is also much lower on MSME (1.03 versus 1.75).
+2. **Higher stability.** When the base-partition library is resampled 50 times, the MSME result hardly changes (ARI 0.99), whereas the marketing result moves slightly more (ARI 0.95).
+3. **Likely cause: the nature of the data (not tested separately).** The MSME attributes are mostly binary, ordinal or discrete, so the data form a limited number of patterns (view V1 has only 4 unique patterns) and distinct groups. The marketing attributes are continuous (about 2,030 unique patterns per view), so customers blend into each other and separate into only K = 2 groups.
+4. **VDI is the exception.** It is lower on marketing (0.7039 versus 0.7823), but the selected K differs (2 versus 6) and VDI depends on K, so this difference is not a like-for-like comparison.
+
+Caveats: the two datasets differ in size, feature types and selected K, so these numbers show which dataset has the clearer cluster structure, not which method is better; CHI in particular depends on n and K and should be read as supporting evidence only. On the method question, RH-MVECC is on par with K-Means on both datasets (see below). The MSME matrix used is the reconstructed file described under Data.
+
+Side-by-side details:
 
 | | MSME (real, n = 2,896, 4 views) | Marketing (public, n = 2,240, 4 views) |
 |---|---|---|
