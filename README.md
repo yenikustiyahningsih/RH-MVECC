@@ -175,6 +175,246 @@ Public labelled benchmarks (Table 23, K = C): RH-MVECC improves NMI over concate
 
 Overall reading: RH-MVECC is supported as a stable, diagnosable consensus method with sensible weighting behaviour, not as a method that beats K-Means on quality indices.
 
+## Public labelled benchmarks: re-run results
+
+All six labelled benchmarks were re-run with the commands in "Running all experiments" (Python 3.11.9, NumPy 2.4.6, pandas 3.1.0, scikit-learn 1.9.1, SciPy 1.17.1, Windows; the per-seed ACC values were identical to an independent run with scikit-learn 1.8.0 on Linux). Seeds: 0-4 for 3Sources, BBCSport, MSRC-v5 and Penguins; 0-2 for Handwritten and Caltech101-7. Values are means over seeds on the **original views** (the first block of each `bench_*.csv`; the nuisance-view block is excluded). All methods use K = C (true number of classes), except where noted. Per-seed raw output: `results/benchmarks/bench_*.csv`; means: `results/benchmarks/summary_mean.csv`.
+
+**NMI (higher is better)**
+
+| Dataset | Concat. K-Means | MV spectral | Unweighted consensus | Quality-weighted consensus | **RH-MVECC (K = C)** | Best method |
+|---|---|---|---|---|---|---|
+| 3Sources | 0.565 | 0.567 | 0.616 | 0.603 | 0.602 | Unweighted consensus |
+| BBCSport | 0.778 | 0.584 | 0.815 | 0.785 | 0.752 | Unweighted consensus |
+| MSRC-v5 | 0.669 | 0.704 | 0.691 | 0.643 | 0.649 | MV spectral |
+| Handwritten | 0.860 | 0.843 | 0.851 | 0.779 | 0.812 | Concat. K-Means |
+| Caltech101-7 | 0.453 | 0.569 | 0.504 | 0.550 | 0.512 | MV spectral |
+| Penguins | 0.502 | 0.452 | 0.502 | 0.502 | 0.502 | tie (5 methods) |
+
+**ACC (higher is better)**
+
+| Dataset | Concat. K-Means | MV spectral | Unweighted consensus | Quality-weighted consensus | **RH-MVECC (K = C)** | Best method |
+|---|---|---|---|---|---|---|
+| 3Sources | 0.553 | 0.580 | 0.609 | 0.576 | 0.607 | (single-view oracle) |
+| BBCSport | 0.837 | 0.548 | 0.878 | 0.858 | 0.837 | Unweighted consensus |
+| MSRC-v5 | 0.730 | 0.762 | 0.762 | 0.718 | 0.724 | MV spectral, Unweighted consensus |
+| Handwritten | 0.922 | 0.839 | 0.767 | 0.627 | 0.674 | Concat. K-Means |
+| Caltech101-7 | 0.518 | 0.592 | 0.557 | 0.751 | 0.732 | Quality-weighted consensus |
+| Penguins | 0.703 | 0.532 | 0.703 | 0.703 | 0.703 | tie (5 methods) |
+
+ARI and Purity are in `summary_mean.csv`. "Best method" ignores the single-view oracle and the automatic-K / equal-weight variants of RH-MVECC. On Penguins five methods return the identical partition (tie); only the single-view oracle is higher (NMI 0.741).
+
+### How RH-MVECC compares with the public datasets
+
+1. **Versus concatenated K-Means (NMI):** RH-MVECC is higher on 3Sources (0.602 vs 0.565) and Caltech101-7 (0.512 vs 0.453), tied on Penguins (0.502), and lower on BBCSport (0.752 vs 0.778), MSRC-v5 (0.649 vs 0.669) and Handwritten (0.812 vs 0.860). This is 2 wins, 1 tie, 3 losses.
+2. **ACC:** the largest gain is on Caltech101-7 (0.732 vs 0.518). On Handwritten RH-MVECC is clearly behind (ACC 0.674 vs 0.922).
+3. **Never the single best method in NMI.** The best NMI comes from unweighted consensus (3Sources, BBCSport), multi-view spectral (MSRC-v5, Caltech101-7) or concatenated K-Means (Handwritten).
+4. **Weighting does not consistently help on these benchmarks.** Unweighted consensus is equal to or better than RH-MVECC in NMI on 3Sources, BBCSport, MSRC-v5 and Handwritten; the view weighting helps mainly on Caltech101-7 (quality-weighted consensus is similar: NMI 0.550, ACC 0.751).
+5. **Automatic K is unreliable on labelled data:** with K chosen by the selection rule, ACC drops (e.g. MSRC-v5 0.400, Handwritten 0.488), because the rule optimises internal indices, not agreement with class labels.
+6. **Penguins** is uninformative for comparing methods (all consensus variants return the same partition as K-Means, ACC 0.703).
+
+Overall reading, consistent with the MSME and marketing results: RH-MVECC is competitive on public benchmarks but not uniformly superior, so the supported claim is stable, diagnosable consensus clustering, not higher accuracy than K-Means.
+
+### Three-dataset-type summary (for the comparison in the paper)
+
+| | MSME (real, unlabelled) | Marketing (public, unlabelled) | Six public labelled benchmarks |
+|---|---|---|---|
+| Evaluation | SC/DBI/CHI, stability, VDI | SC/DBI/CHI, stability, VDI | ACC/NMI/ARI/Purity vs ground truth |
+| RH-MVECC vs K-Means | tied | tied | NMI: 2 wins, 1 tie, 3 losses |
+| Strength shown | stability (ARI 0.99), lowest VDI | stability (ARI 0.95) | competitive, large ACC gain on Caltech101-7 |
+| Limitation | VDI advantage not general | higher VDI than baselines at K = 2 | behind K-Means on Handwritten |
+
+## Ablation, sensitivity, stability and VDI diagnostics: re-run results
+
+Re-run on the reconstructed MSME matrix (input SHA-256 `d48faa82...`), Python 3.11.9, scikit-learn 1.9.1, with `exp_ablation_sensitivity.py --repeats 20`, `exp_vdi_diagnostics.py` and `exp_stability.py`. Raw outputs: `results/ablation/`, `results/vdi/`, `results/stability/`. P* denotes the RH-MVECC partition at K = 6.
+
+### Simpler ablation baselines (R2-3)
+
+All variants select K = 6. Differences in SC (0.380-0.390), DBI (1.019-1.049) and CHI (1230-1266) are small, and RH-MVECC is not the single best on any of them.
+
+| Group | Variant | K | SC | DBI | CHI | VDI | ARI vs RH-MVECC |
+|---|---|---|---|---|---|---|---|
+| reference | RH-MVECC (proposed) | 6 | 0.3885 | 1.0251 | 1234.0 | 0.7823 | 1.0000 |
+| view weighting | Equal view weights (w_v = 1/V) | 6 | 0.3850 | 1.0373 | 1266.0 | 0.8013 | 0.9746 |
+| view weighting | Raw SC view weights (w_v ∝ SC_v) | 6 | 0.3855 | 1.0240 | 1256.0 | 0.8047 | 0.9841 |
+| view weighting | Without granularity/entropy term | 6 | 0.3799 | 1.0487 | 1264.5 | 0.7988 | 0.9547 |
+| view weighting | Without stability term T_v | 6 | 0.3885 | 1.0251 | 1234.0 | 0.7823 | 1.0000 |
+| library | Full family only (K-Means + GMM) | 6 | 0.3850 | 1.0364 | 1265.9 | 0.8015 | 0.9737 |
+| library | Full family, K-Means only | 6 | 0.3850 | 1.0373 | 1266.0 | 0.8013 | 0.9746 |
+| library | Full + Weighted (no ViewSpecific) | 6 | 0.3887 | 1.0234 | 1262.0 | 0.8050 | 0.9834 |
+| library | Full + ViewSpecific (no Weighted) | 6 | 0.3875 | 1.0293 | 1263.6 | 0.8035 | 0.9910 |
+| library | Weighted + ViewSpecific (no Full) | 6 | 0.3898 | 1.0189 | 1230.5 | 0.7805 | 0.9910 |
+| partition weighting | No family balancing | 6 | 0.3876 | 1.0283 | 1263.3 | 0.8037 | 0.9910 |
+| partition weighting | Uniform partition weights within family (eps = 1) | 6 | 0.3889 | 1.0211 | 1259.4 | 0.8021 | 0.9827 |
+
+Reading: no ablated variant is clearly worse than the full method, and the full method is not clearly better. The lowest VDI of RH-MVECC (0.7823) is matched by "Weighted + ViewSpecific" (0.7805), and the other variants lie at 0.799-0.805. "Without T_v" is identical to the full method (see T_v below).
+
+### Selection-rule ablation (R2-3)
+
+| Selection rule | K | SC | DBI | CHI | Stability ARI | VDI |
+|---|---|---|---|---|---|---|
+| SC only | 3 | 0.4102 | 1.0623 | 1410.9 | 0.9409 | 0.9347 |
+| DBI only | 8 | 0.3854 | 1.0034 | 936.7 | 0.9437 | 0.7956 |
+| CHI only | 2 | 0.3574 | 1.2492 | 1513.6 | 0.8861 | 0.7736 |
+| SC + DBI + CHI (equal, no stability, no VDI) | 3 | 0.4102 | 1.0623 | 1410.9 | 0.9409 | 0.9347 |
+| Composite without VDI term and without threshold | 6 | 0.3885 | 1.0251 | 1234.0 | 0.9906 | 0.7823 |
+| Composite with VDI term, without threshold | 6 | 0.3885 | 1.0251 | 1234.0 | 0.9906 | 0.7823 |
+| Composite without VDI term, with threshold tau = 0.85 | 6 | 0.3885 | 1.0251 | 1234.0 | 0.9906 | 0.7823 |
+| SC only, with threshold tau = 0.85 | 6 | 0.3885 | 1.0251 | 1234.0 | 0.9906 | 0.7823 |
+| RH-MVECC rule (composite + threshold) | 6 | 0.3885 | 1.0251 | 1234.0 | 0.9906 | 0.7823 |
+
+Reading: single-index rules choose different K (SC only: 3; DBI only: 8; CHI only: 2) with lower stability (ARI 0.89-0.94). SC only selects K = 3, which has VDI 0.9347 > tau = 0.85 and is excluded by the threshold. The composite score already selects K = 6 without the VDI term and without the threshold, so the threshold changes the outcome only for the SC-only rule.
+
+### Sensitivity to alpha, beta (Eq. 4), the adaptive alternative, and epsilon (Eq. 7) (R3-3, R3-4)
+
+| Group | Variant | K | w_V1 | w_V4 | SC | DBI | VDI | ARI vs RH-MVECC |
+|---|---|---|---|---|---|---|---|---|
+| alpha (beta = 1) | alpha = 0.0 | 6 | 0.1569 | 0.2161 | 0.3891 | 1.0234 | 0.7822 | 0.9932 |
+| alpha (beta = 1) | alpha = 0.25 | 6 | 0.1676 | 0.2296 | 0.3871 | 1.0279 | 0.7804 | 0.9858 |
+| alpha (beta = 1) | alpha = 0.5 | 6 | 0.1798 | 0.2452 | 0.3885 | 1.0251 | 0.7823 | 1.0000 |
+| alpha (beta = 1) | alpha = 0.75 | 6 | 0.1939 | 0.2632 | 0.3855 | 1.0352 | 0.8018 | 0.9759 |
+| alpha (beta = 1) | alpha = 1.0 | 6 | 0.2105 | 0.2842 | 0.3895 | 1.0212 | 0.8061 | 0.9767 |
+| beta (alpha = 0.5) | beta = 0.5 | 6 | 0.1682 | 0.2305 | 0.3884 | 1.0258 | 0.7816 | 0.9958 |
+| beta (alpha = 0.5) | beta = 2.0 | 6 | 0.2036 | 0.2750 | 0.3876 | 1.0275 | 0.8039 | 0.9901 |
+| beta (alpha = 0.5) | beta = 4.0 | 6 | 0.2522 | 0.3340 | 0.3839 | 1.0186 | 0.8057 | 0.9780 |
+| adaptive | Adaptive: entropy-weight exponents | 4 | 0.0691 | 0.1583 | 0.3668 | 1.1928 | 0.6544 | 0.8996 |
+| eps | eps = 0.0 | 6 | 0.1798 | 0.2452 | 0.3859 | 1.0342 | 0.8020 | 0.9783 |
+| eps | eps = 0.05 | 6 | 0.1798 | 0.2452 | 0.3886 | 1.0237 | 0.7825 | 0.9985 |
+| eps | eps = 0.1 | 6 | 0.1798 | 0.2452 | 0.3885 | 1.0251 | 0.7823 | 1.0000 |
+| eps | eps = 0.2 | 6 | 0.1798 | 0.2452 | 0.3885 | 1.0233 | 0.7824 | 0.9961 |
+| eps | eps = 0.3 | 6 | 0.1798 | 0.2452 | 0.3882 | 1.0222 | 0.7826 | 0.9952 |
+| eps | eps = 0.5 | 6 | 0.1798 | 0.2452 | 0.3890 | 1.0207 | 0.7799 | 0.9946 |
+| eps | eps = 1.0 | 6 | 0.1798 | 0.2452 | 0.3889 | 1.0211 | 0.8021 | 0.9827 |
+
+Reading:
+* **alpha, beta:** K = 6 for every setting; partitions stay within ARI 0.976-0.996 of the default. Alpha changes the weight of V1 from 0.157 (alpha = 0) to 0.211 (alpha = 1); beta = 4 raises w_V4 to 0.334. The values alpha = 0.5 and beta = 1 are therefore heuristic defaults to which the result is not sensitive, not optimal values.
+* **Adaptive exponents (entropy-weight):** this alternative selects K = 4, gives ARI 0.8996 to the default, and is worse on SC (0.3668) and DBI (1.1928) at its own K. At K = 6 it is comparable (SC 0.3902, ARI 0.975 to the default). It is not shown to be better than fixed values, and it shrinks the weight of V1 to 0.069.
+* **epsilon:** it only affects partition weights, so the view weights are identical. K = 6 for all values and ARI to the default is 0.978-0.9985. The value epsilon = 0.1 is a heuristic choice; there is no mathematical derivation, and the sensitivity result is the justification.
+
+### Effect of the stability factor T_v on the view weights (R2-5)
+
+| n_init for T_v | T_v in weights | View | T_v | R_v | Weight |
+|---|---|---|---|---|---|
+| 20 | True | V1 | 1.0000 | 0.3587 | 0.1798 |
+| 20 | True | V2 | 1.0000 | 0.6048 | 0.3031 |
+| 20 | True | V3 | 1.0000 | 0.5424 | 0.2719 |
+| 20 | True | V4 | 1.0000 | 0.4891 | 0.2452 |
+| 20 | False | V1 | 1.0000 | 0.3587 | 0.1798 |
+| 20 | False | V2 | 1.0000 | 0.6048 | 0.3031 |
+| 20 | False | V3 | 1.0000 | 0.5424 | 0.2719 |
+| 20 | False | V4 | 1.0000 | 0.4891 | 0.2452 |
+| 1 | True | V1 | 1.0000 | 0.3587 | 0.2005 |
+| 1 | True | V2 | 0.8996 | 0.5441 | 0.3042 |
+| 1 | True | V3 | 0.7316 | 0.3968 | 0.2219 |
+| 1 | True | V4 | 1.0000 | 0.4891 | 0.2735 |
+| 1 | False | V1 | 1.0000 | 0.3587 | 0.1798 |
+| 1 | False | V2 | 0.8996 | 0.6048 | 0.3031 |
+| 1 | False | V3 | 0.7316 | 0.5424 | 0.2719 |
+| 1 | False | V4 | 1.0000 | 0.4891 | 0.2452 |
+
+Reading: with the default 20 K-Means initialisations T_v = 1 for all four views, so including or excluding T_v gives identical weights; **in the main setting the stability factor has no effect on the weights.** With a single initialisation T_V2 = 0.900 and T_V3 = 0.732, and including T_v lowers the weight of V3 (0.2219 versus 0.2719); the partition changes little (ARI 0.990 to the default, K = 6).
+
+### Stability procedures (R2-5)
+
+Library fraction (50 draws per fraction, seed 123):
+
+| Library fraction | Partitions | Selected K | ARI mean (95% CI) | ARI min | NMI mean |
+|---|---|---|---|---|---|
+| 0.6 | 27 | 6 | 0.9850 (0.9833-0.9867) | 0.9699 | 0.9736 |
+| 0.7 | 31 | 6 | 0.9871 (0.9856-0.9886) | 0.9758 | 0.9766 |
+| 0.8 | 36 | 6 | 0.9900 (0.9879-0.9921) | 0.9736 | 0.9817 |
+| 0.9 | 40 | 6 | 0.9926 (0.9907-0.9946) | 0.9758 | 0.9866 |
+
+Seed re-runs (seeds 0-9) and 80% MSME subsamples (10 subsets, `default_rng(555)`), ARI against the full-data reference:
+
+| Procedure | Runs | K=6 in | ARI vs reference mean (SD) | 95% CI | Min |
+|---|---|---|---|---|---|
+| B seed re-runs | 10 | 100% | 0.9888 (0.0078) | 0.9833-0.9944 | 0.9744 |
+| C 80% MSME subsamples | 10 | 100% | 0.9866 (0.0103) | 0.9792-0.9940 | 0.9680 |
+
+Across seed re-runs, the view weights are identical (SD = 0) and T_v = 1 for every view. Across subsamples the weights vary by at most about 0.004 (e.g. w_V1 0.1798-0.1826).
+
+### VDI diagnostics (R2-1, R2-2, R3-1)
+
+NMI between each view's partition and the consensus partition, by K (dominant view is V1 at every K):
+
+| K | VDI | Dominant view | NMI V1 | NMI V2 | NMI V3 | NMI V4 | Eligible (VDI<=0.85) |
+|---|---|---|---|---|---|---|---|
+| 2 | 0.7736 | V1 | 0.7736 | 0.0131 | 0.0030 | 0.0032 | True |
+| 3 | 0.9347 | V1 | 0.9347 | 0.0237 | 0.0093 | 0.0064 | False |
+| 4 | 0.8281 | V1 | 0.8281 | 0.2702 | 0.0088 | 0.0416 | True |
+| 5 | 0.7502 | V1 | 0.7502 | 0.4807 | 0.0148 | 0.0525 | True |
+| 6 | 0.7823 | V1 | 0.7823 | 0.4655 | 0.0145 | 0.0533 | True |
+| 7 | 0.7812 | V1 | 0.7812 | 0.4668 | 0.0146 | 0.0539 | True |
+| 8 | 0.7956 | V1 | 0.7956 | 0.4600 | 0.0144 | 0.0549 | True |
+| 9 | 0.7317 | V1 | 0.7317 | 0.4165 | 0.0135 | 0.1735 | True |
+| 10 | 0.7256 | V1 | 0.7256 | 0.4305 | 0.0136 | 0.1738 | True |
+
+Information decomposition of the K = 6 partition (H(P*) = 2.19 bits):
+
+| Views | Share of H(P*) | NMI with P* |
+|---|---|---|
+| V1 | 65.5% | 0.7823 |
+| V2 | 31.6% | 0.4655 |
+| V3 | 1.0% | 0.0145 |
+| V4 | 6.0% | 0.0533 |
+| V1+V2 | 96.5% | 0.9520 |
+| V1+V2+V3+V4 | 97.7% | 0.5409 |
+
+Surrogate decision tree predicting P* from view features:
+
+| Views used by tree (depth 3) | Accuracy | Balanced accuracy |
+|---|---|---|
+| V1 | 0.7686 | 0.6667 |
+| V2 | 0.4969 | 0.3316 |
+| V3 | 0.4154 | 0.2546 |
+| V4 | 0.3747 | 0.1786 |
+| V1+V2 | 0.9938 | 0.9895 |
+| V1+V2+V3+V4 | 0.9938 | 0.9895 |
+
+Reference partitions and the VDI value they obtain:
+
+| Partition | K | VDI | ARI vs P* |
+|---|---|---|---|
+| Pure V1 reference (NIB x Land) | 4 | 1.0000 | 0.6661 |
+| V1 x V2 reference | 8 | 0.7936 | 0.9710 |
+| V1 x V3 reference | 10 | 0.7707 | 0.4615 |
+| V1 x V4 reference | 39 | 0.7900 | 0.1870 |
+| V2 x V3 reference | 5 | 0.6954 | 0.2296 |
+| V1 x V2 x V3 x V4 reference | 120 | 0.6505 | 0.1471 |
+| Random partition, sizes of P* | 6 | 0.0044 | 0.0009 |
+| RH-MVECC P* (K=6) | 6 | 0.7823 | 1.0000 |
+| RH-MVECC consensus K=3 | 3 | 0.9347 | 0.6548 |
+| RH-MVECC consensus K=4 | 4 | 0.8281 | 0.8099 |
+
+Contingency of V1 (business registration NIB x land ownership) with the six clusters (`contingency_V1_by_cluster.csv`): clusters 1, 2, 4, 5 and 6 each lie entirely in a single V1 pattern, and cluster 3 is split between two patterns (24 and 336 MSMEs).
+
+**Reading (this partly supports and partly limits the VDI claim):**
+1. VDI = 0.7823 < 1: the partition is not a copy of V1 (the "pure V1" reference with K = 4 has VDI = 1.0 and ARI only 0.666 to P*). V1 alone explains 65.5% of the entropy of P*.
+2. However, V1 is the dominant view at every K, and **P* is essentially V1 refined by V2**: V1 + V2 explain 96.5% of H(P*), a depth-3 tree on V1 + V2 recovers P* with 99.4% accuracy, and the "V1 x V2 reference" has ARI 0.971 to P*. This confirms the reviewer's observation (R2-2) that the final clusters still correspond strongly to registration status and land ownership.
+3. VDI below tau therefore means "no single view reproduces the partition", not "no view has a large influence". V3 and V4 contribute almost nothing (NMI 0.015 and 0.053).
+4. V1 has the smallest reliability weight (0.18) yet is the most influential view in the final partition: the view weights do not control the VDI-dominant view here. The partition is determined mainly by the way view-specific partitions combine in the consensus.
+
+### Nuisance-view injection (R2-2)
+
+A random binary nuisance view V5 is added to the MSME views (seeds 11-13, means over seeds):
+
+| View weighting | Selection | Mean K | Weight of nuisance view | VDI (dominant = nuisance) | ARI vs original P* |
+|---|---|---|---|---|---|
+| reliability | with VDI control | 8 | 0.1729 | 0.8005 | 0.2023 |
+| reliability | without VDI control | 8 | 0.1729 | 0.8005 | 0.2023 |
+| sc | with VDI control | 8 | 0.2390 | 0.8005 | 0.2023 |
+| sc | without VDI control | 8 | 0.2390 | 0.8005 | 0.2023 |
+| equal | with VDI control | 8 | 0.2000 | 0.8005 | 0.2023 |
+| equal | without VDI control | 8 | 0.2000 | 0.8005 | 0.2023 |
+| concatenated K-Means | fixed K=6 | 6 | - | 0.7127 | 0.2363 |
+
+Reading: this is a negative result for dominance control.
+* With the nuisance view, K = 8 is selected in all seeds, the nuisance view becomes the dominant view (NMI 0.80), and the partition changes strongly (ARI to the original P* about 0.20).
+* VDI = 0.80 is below tau = 0.85, so the threshold does not flag the nuisance view; "with VDI control" and "without VDI control" give identical results.
+* Reliability, SC-based and equal view weights give the same partition and the same VDI. The nuisance view's weight is lower under reliability weighting (0.173 versus 0.200 and 0.239) but this does not change the outcome.
+* Concatenated K-Means at K = 6 is affected in a similar way (ARI to original 0.18-0.27).
+* VDI as a **diagnostic** does identify the nuisance view as the dominant one (reported as `V5_nuisance`), but the fixed threshold tau = 0.85 and the weighting do not prevent the dominance. The supported claim is that VDI reveals which view dominates; it is not shown to prevent dominance.
+
 ## Seeds and repeated-run procedures
 
 * K-Means (`n_init = 20`) and GMM (full covariance, `n_init = 1`, `reg_covar = 1e-6`): `random_state = 42`.
