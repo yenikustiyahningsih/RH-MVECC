@@ -6,4 +6,6 @@ hasil_saya/
 
 # exp_marketing.py
 # results/marketing/
-# data/marketing_campaign_rapi.xlsx
+data/marketing_campaign_rapi.xlsx
+results/marketing/marketing_normalized.csv
+results/marketing/assignments.csv
