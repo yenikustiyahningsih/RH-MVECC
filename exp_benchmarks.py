@@ -5,7 +5,7 @@ and Palmer Penguins as a small *heterogeneous mixed-type* benchmark (binary/cate
 Metrics: ACC (Hungarian), NMI, ARI, Purity; mean +- SD over 5 seeds.
 
 Preprocessing of high-dimensional views (documented in the manuscript):
-  text views (3Sources, BBCSport): row L2 normalisation -> TruncatedSVD (50 comps)
+  text views (3Sources, BBCSport, NGs): row L2 normalisation -> TruncatedSVD (50 comps)
   image/feature views: z-score -> PCA (<= 50 comps)
   each view block is then rescaled so that its average per-feature variance equals 1
 Penguins follows the MSME pipeline exactly (min-max, no reduction).
