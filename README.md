@@ -39,7 +39,7 @@ Expected output in `results/main_rerun/summary.json`:
 | `exp_ablation_sensitivity.py` | Simpler ablation baselines, selection-rule ablation, alpha/beta/adaptive (Eq. 4), epsilon (Eq. 7), effect of T_v | R2-3, R2-5, R3-3, R3-4 |
 | `exp_stability.py` | Library-fraction, seed-level re-runs, MSME-level subsampling | R2-5 |
 | `exp_benchmarks.py` | Public multi-view benchmarks with ground truth (ACC/NMI/ARI/Purity) + nuisance-view stress test | R2-3, R3-2, R3-5 |
-| `exp_marketing.py` | Second application on a public, unlabelled dataset (Customer Personality Analysis): same pipeline, baselines at the selected K, response-rate check | supervisor request; external validity (R2-3, R3-2) |
+| `exp_marketing.py` | Second application on a public, unlabelled dataset (Customer Personality Analysis): same pipeline, baselines at the selected K, response-rate check | external validity (R2-3, R3-2, R3-5) |
 | `make_figures.py` | Manuscript figures | |
 
 ## Running all experiments
@@ -135,7 +135,7 @@ Reasons:
 
 1. **Better separation.** By the common rule of thumb for the silhouette coefficient, SC below about 0.25 means no substantial cluster structure and 0.26-0.50 a weak-to-moderate one: marketing (0.2179) falls in the first group, MSME (0.3885) in the second. DBI is also much lower on MSME (1.03 versus 1.75).
 2. **Higher stability.** When the base-partition library is resampled 50 times, the MSME result hardly changes (ARI 0.99), whereas the marketing result moves slightly more (ARI 0.95).
-3. **Likely cause: the nature of the data (not tested separately).** The MSME attributes are mostly binary, ordinal or discrete, so the data form a limited number of patterns (view V1 has only 4 unique patterns) and distinct groups. The marketing attributes are continuous (about 2,030 unique patterns per view), so customers blend into each other and separate into only K = 2 groups.
+3. **Likely cause: the nature of the data (not tested separately).** The MSME attributes are mostly binary, ordinal or discrete, so the data form a limited number of patterns (view V1 has only 4 unique patterns) and distinct groups. The marketing attributes are largely continuous, so customers blend into each other and separate into only K = 2 groups.
 4. **VDI is the exception.** It is lower on marketing (0.7039 versus 0.7823), but the selected K differs (2 versus 6) and VDI depends on K, so this difference is not a like-for-like comparison.
 
 Caveats: the two datasets differ in size, feature types and selected K, so these numbers show which dataset has the clearer cluster structure, not which method is better; CHI in particular depends on n and K and should be read as supporting evidence only. On the method question, RH-MVECC is on par with K-Means on both datasets (see below). The MSME matrix used is the reconstructed file described under Data.
@@ -373,6 +373,8 @@ Surrogate decision tree predicting P* from view features:
 | V4 | 0.3747 | 0.1786 |
 | V1+V2 | 0.9938 | 0.9895 |
 | V1+V2+V3+V4 | 0.9938 | 0.9895 |
+
+The manuscript (Table 15) reports the depth-6, 5-fold CV tree (accuracy 0.992 for V1+V2); both depths are in `results/vdi/surrogate_tree.csv`.
 
 Reference partitions and the VDI value they obtain:
 
