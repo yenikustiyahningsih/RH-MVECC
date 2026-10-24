@@ -1,6 +1,6 @@
 # RH-MVECC: code, seeds and results
 
-Reliability-Weighted Heterogeneous Multi-View Ensemble Consensus Clustering with View-Dominance Control, applied to MSME segmentation and checked on public datasets (six labelled multi-view benchmarks and the Customer Personality Analysis marketing data). This repository contains the dataset-agnostic library (`rhmvecc/`), one script per experiment, all random seeds, and the raw outputs of every experiment reported in the revised manuscript submitted to *Array*.
+Reliability-Weighted Heterogeneous Multi-View Ensemble Consensus Clustering with View-Dominance Control, applied to MSME segmentation and checked on public datasets (seven labelled multi-view benchmarks and the Customer Personality Analysis marketing data). This repository contains the dataset-agnostic library (`rhmvecc/`), one script per experiment, all random seeds, and the raw outputs of every experiment reported in the revised manuscript submitted to *Array*.
 
 ## Requirements
 
@@ -52,7 +52,7 @@ python exp_vdi_share.py          $D
 python exp_ablation_sensitivity.py --input $D --out results/ablation --repeats 20
 python exp_stability.py          --input $D --out results/stability
 bash benchmarks/download_benchmarks.sh   # downloads the .mat files (not stored in this repository)
-python exp_benchmarks.py --data benchmarks --out results/benchmarks --only 3Sources,BBCSport,MSRC-v5,Penguins
+python exp_benchmarks.py --data benchmarks --out results/benchmarks --only 3Sources,BBCSport,NGs,MSRC-v5,Penguins
 python exp_benchmarks.py --data benchmarks --out results/benchmarks --only Handwritten --seeds 3
 python exp_benchmarks.py --data benchmarks --out results/benchmarks --only Caltech101-7 --seeds 3
 python exp_penguins_svs.py
@@ -70,6 +70,7 @@ Approximate run time on a 2-vCPU machine: main 2.5 min; diagnostics about 1 h; a
 |---|---|---|---|---|---|
 | 3Sources | text (news) | 169 | 3 | 6 | labelled benchmark (Tables 22–23) |
 | BBCSport | text (news) | 544 | 2 | 5 | labelled benchmark |
+| NGs (20 Newsgroups subset) | text (news) | 500 | 3 | 5 | labelled benchmark (traditional text benchmark requested by R3-2) |
 | MSRC-v5 | image | 210 | 5 | 7 | labelled benchmark |
 | Handwritten | image (digits) | 2,000 | 6 | 10 | labelled benchmark |
 | Caltech101-7 | image (objects) | 1,474 | 6 | 7 | labelled benchmark |
@@ -115,7 +116,7 @@ Cluster 2 is the higher-income, higher-spending, child-free group that buys thro
 
 ## Comparison: real MSME data versus public datasets
 
-Reviewers asked for comparison datasets. RH-MVECC was therefore run, unchanged, on (i) six public labelled benchmarks (Tables 22–23 of the manuscript) and (ii) the public, unlabelled marketing data.
+Reviewers asked for comparison datasets. RH-MVECC was therefore run, unchanged, on (i) seven public labelled benchmarks (Tables 22–23 of the manuscript) and (ii) the public, unlabelled marketing data.
 
 ### Which dataset gives the better result?
 
@@ -162,7 +163,7 @@ Same-K comparison (SC / DBI / CHI / VDI; MSME at K = 6, marketing at K = 2):
 
 On marketing, RH-MVECC with equal view weights gives 0.2172 / 1.7577 / 687.2 / 0.6591.
 
-Public labelled benchmarks (Table 23, K = C): RH-MVECC improves NMI over concatenated K-Means on 2 of 6 datasets (3Sources, Caltech101-7; Penguins is a tie), with a large ACC gain on Caltech101-7 (0.732 versus 0.518). It is never the single best method in NMI and is clearly behind concatenated K-Means on Handwritten (NMI 0.812 versus 0.860).
+Public labelled benchmarks (Table 23, K = C): RH-MVECC improves NMI over concatenated K-Means on 2 of 7 datasets (3Sources, Caltech101-7; Penguins is a tie), with a large ACC gain on Caltech101-7 (0.732 versus 0.518). It is never the single best method in NMI and is clearly behind concatenated K-Means on Handwritten (NMI 0.812 versus 0.860) and NGs (NMI 0.883 versus 0.919).
 
 ### What the comparison shows
 
@@ -177,7 +178,7 @@ Overall reading: RH-MVECC is supported as a stable, diagnosable consensus method
 
 ## Public labelled benchmarks: re-run results
 
-All six labelled benchmarks were re-run with the commands in "Running all experiments" (Python 3.11.9, NumPy 2.4.6, pandas 3.1.0, scikit-learn 1.9.1, SciPy 1.17.1, Windows; the per-seed ACC values were identical to an independent run with scikit-learn 1.8.0 on Linux). Seeds: 0-4 for 3Sources, BBCSport, MSRC-v5 and Penguins; 0-2 for Handwritten and Caltech101-7. Values are means over seeds on the **original views** (the first block of each `bench_*.csv`; the nuisance-view block is excluded). All methods use K = C (true number of classes), except where noted. Per-seed raw output: `results/benchmarks/bench_*.csv`; means: `results/benchmarks/summary_mean.csv`.
+All seven labelled benchmarks were re-run with the commands in "Running all experiments" (Python 3.11.9, NumPy 2.4.6, pandas 3.1.0, scikit-learn 1.9.1, SciPy 1.17.1, Windows; the per-seed ACC values were identical to an independent run with scikit-learn 1.8.0 on Linux). Seeds: 0-4 for 3Sources, BBCSport, NGs, MSRC-v5 and Penguins; 0-2 for Handwritten and Caltech101-7. Values are means over seeds on the **original views** (the first block of each `bench_*.csv`; the nuisance-view block is excluded). All methods use K = C (true number of classes), except where noted. Per-seed raw output: `results/benchmarks/bench_*.csv`; means: `results/benchmarks/summary_mean.csv`.
 
 **NMI (higher is better)**
 
@@ -185,43 +186,45 @@ All six labelled benchmarks were re-run with the commands in "Running all experi
 |---|---|---|---|---|---|---|
 | 3Sources | 0.565 | 0.567 | 0.616 | 0.603 | 0.602 | Unweighted consensus |
 | BBCSport | 0.778 | 0.584 | 0.815 | 0.785 | 0.752 | Unweighted consensus |
+| NGs | 0.919 | 0.843 | 0.881 | 0.850 | 0.883 | Concat. K-Means |
 | MSRC-v5 | 0.669 | 0.704 | 0.691 | 0.643 | 0.649 | MV spectral |
 | Handwritten | 0.860 | 0.843 | 0.851 | 0.779 | 0.812 | Concat. K-Means |
 | Caltech101-7 | 0.453 | 0.569 | 0.504 | 0.550 | 0.512 | MV spectral |
-| Penguins | 0.502 | 0.452 | 0.502 | 0.502 | 0.502 | tie (5 methods) |
+| Penguins | 0.502 | 0.452 | 0.502 | 0.502 | 0.502 | tie (4 methods) |
 
 **ACC (higher is better)**
 
 | Dataset | Concat. K-Means | MV spectral | Unweighted consensus | Quality-weighted consensus | **RH-MVECC (K = C)** | Best method |
 |---|---|---|---|---|---|---|
-| 3Sources | 0.553 | 0.580 | 0.609 | 0.576 | 0.607 | (single-view oracle) |
+| 3Sources | 0.553 | 0.580 | 0.609 | 0.576 | 0.607 | Unweighted consensus |
 | BBCSport | 0.837 | 0.548 | 0.878 | 0.858 | 0.837 | Unweighted consensus |
+| NGs | 0.973 | 0.940 | 0.958 | 0.882 | 0.959 | Concat. K-Means |
 | MSRC-v5 | 0.730 | 0.762 | 0.762 | 0.718 | 0.724 | MV spectral, Unweighted consensus |
 | Handwritten | 0.922 | 0.839 | 0.767 | 0.627 | 0.674 | Concat. K-Means |
 | Caltech101-7 | 0.518 | 0.592 | 0.557 | 0.751 | 0.732 | Quality-weighted consensus |
-| Penguins | 0.703 | 0.532 | 0.703 | 0.703 | 0.703 | tie (5 methods) |
+| Penguins | 0.703 | 0.532 | 0.703 | 0.703 | 0.703 | tie (4 methods) |
 
-ARI and Purity are in `summary_mean.csv`. "Best method" ignores the single-view oracle and the automatic-K / equal-weight variants of RH-MVECC. On Penguins five methods return the identical partition (tie); only the single-view oracle is higher (NMI 0.741).
+ARI and Purity are in `summary_mean.csv`. "Best method" ignores the single-view oracle and the automatic-K / equal-weight variants of RH-MVECC. On Penguins four of the compared methods shown (five with the equal-weight RH-MVECC variant) return the identical partition (tie); only the single-view oracle is higher (NMI 0.741).
 
 ### How RH-MVECC compares with the public datasets
 
-1. **Versus concatenated K-Means (NMI):** RH-MVECC is higher on 3Sources (0.602 vs 0.565) and Caltech101-7 (0.512 vs 0.453), tied on Penguins (0.502), and lower on BBCSport (0.752 vs 0.778), MSRC-v5 (0.649 vs 0.669) and Handwritten (0.812 vs 0.860). This is 2 wins, 1 tie, 3 losses.
-2. **ACC:** the largest gain is on Caltech101-7 (0.732 vs 0.518). On Handwritten RH-MVECC is clearly behind (ACC 0.674 vs 0.922).
-3. **Never the single best method in NMI.** The best NMI comes from unweighted consensus (3Sources, BBCSport), multi-view spectral (MSRC-v5, Caltech101-7) or concatenated K-Means (Handwritten).
-4. **Weighting does not consistently help on these benchmarks.** Unweighted consensus is equal to or better than RH-MVECC in NMI on 3Sources, BBCSport, MSRC-v5 and Handwritten; the view weighting helps mainly on Caltech101-7 (quality-weighted consensus is similar: NMI 0.550, ACC 0.751).
-5. **Automatic K is unreliable on labelled data:** with K chosen by the selection rule, ACC drops (e.g. MSRC-v5 0.400, Handwritten 0.488), because the rule optimises internal indices, not agreement with class labels.
+1. **Versus concatenated K-Means (NMI):** RH-MVECC is higher on 3Sources (0.602 vs 0.565) and Caltech101-7 (0.512 vs 0.453), tied on Penguins (0.502), and lower on BBCSport (0.752 vs 0.778), NGs (0.883 vs 0.919), MSRC-v5 (0.649 vs 0.669) and Handwritten (0.812 vs 0.860). This is 2 wins, 1 tie, 4 losses.
+2. **ACC:** the largest gain is on Caltech101-7 (0.732 vs 0.518). On Handwritten RH-MVECC is clearly behind (ACC 0.674 vs 0.922); on NGs it is slightly behind (0.959 vs 0.973).
+3. **Never the single best method in NMI.** The best NMI comes from unweighted consensus (3Sources, BBCSport), multi-view spectral (MSRC-v5, Caltech101-7) or concatenated K-Means (Handwritten, NGs).
+4. **Weighting does not consistently help on these benchmarks.** Unweighted consensus is equal to or better than RH-MVECC in NMI on 3Sources, BBCSport, MSRC-v5 and Handwritten, and equal on NGs (0.881 vs 0.883); the view weighting helps mainly on Caltech101-7 (quality-weighted consensus is similar: NMI 0.550, ACC 0.751). On NGs the reliability weights do help compared with equal view weights (NMI 0.883 vs 0.819, ACC 0.959 vs 0.805), but not compared with unweighted consensus.
+5. **Automatic K is unreliable on labelled data:** with K chosen by the selection rule, ACC drops (e.g. MSRC-v5 0.400, Handwritten 0.488; on NGs it selects K = 2 for C = 5 classes in all seeds, ACC 0.389), because the rule optimises internal indices, not agreement with class labels.
 6. **Penguins** is uninformative for comparing methods (all consensus variants return the same partition as K-Means, ACC 0.703).
 
 Overall reading, consistent with the MSME and marketing results: RH-MVECC is competitive on public benchmarks but not uniformly superior, so the supported claim is stable, diagnosable consensus clustering, not higher accuracy than K-Means.
 
 ### Three-dataset-type summary (for the comparison in the paper)
 
-| | MSME (real, unlabelled) | Marketing (public, unlabelled) | Six public labelled benchmarks |
+| | MSME (real, unlabelled) | Marketing (public, unlabelled) | Seven public labelled benchmarks |
 |---|---|---|---|
 | Evaluation | SC/DBI/CHI, stability, VDI | SC/DBI/CHI, stability, VDI | ACC/NMI/ARI/Purity vs ground truth |
-| RH-MVECC vs K-Means | tied | tied | NMI: 2 wins, 1 tie, 3 losses |
+| RH-MVECC vs K-Means | tied | tied | NMI: 2 wins, 1 tie, 4 losses |
 | Strength shown | stability (ARI 0.99), lowest VDI | stability (ARI 0.95) | competitive, large ACC gain on Caltech101-7 |
-| Limitation | VDI advantage not general | higher VDI than baselines at K = 2 | behind K-Means on Handwritten |
+| Limitation | VDI advantage not general | higher VDI than baselines at K = 2 | behind K-Means on Handwritten and NGs |
 
 ## Ablation, sensitivity, stability and VDI diagnostics: re-run results
 
@@ -434,7 +437,7 @@ Provenance: the original workbook `data_prep_2896.xlsm` is not included in this 
 
 Marketing data: not stored in this repository. The public Kaggle dataset "Marketing Campaign" by Rodolfo Saldanha (`marketing_campaign.csv`, 2,240 rows, 29 columns; https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign; licence on Kaggle: "Other (specified in description)") must be downloaded from Kaggle by the user, who is responsible for respecting the terms stated on that page. The cleaned input used for the second application, `data/marketing_campaign_rapi.xlsx`, is derived from that file; the preprocessing steps are recorded in `results/marketing/summary.json` (median imputation of 24 missing `Income` values, winsorisation of continuous features, reference date 2014-06-29 for age and tenure).
 
-Benchmarks (`benchmarks/`): 3Sources, BBCSport, MSRC-v5, Handwritten and Caltech101-7 (.mat files from https://github.com/ChuanbinZhang/Multi-view-datasets; checksums in `benchmarks/SHA256SUMS.txt`) and Palmer Penguins (https://github.com/mwaskom/seaborn-data). Any `.mat` file with a cell array `X` (views) and a label vector `y` (e.g. NGs) can be added to `exp_benchmarks.py` by extending the dataset list.
+Benchmarks (`benchmarks/`): 3Sources, BBCSport, MSRC-v5, Handwritten and Caltech101-7 (.mat files from https://github.com/ChuanbinZhang/Multi-view-datasets; checksums in `benchmarks/SHA256SUMS.txt`), NGs (the 20 Newsgroups subset with 500 documents, 3 views of 2,000 features and 5 balanced classes; file `20newsgroups.mat` from https://github.com/zskong/Multi-view-data, SHA-256 `99bd0802...`) and Palmer Penguins (https://github.com/mwaskom/seaborn-data). Any `.mat` file with a cell array `X` (views) and a label vector `y` (e.g. NGs) can be added to `exp_benchmarks.py` by extending the dataset list.
 
 Note on `results/benchmarks/bench_*.csv`: for Handwritten, Caltech101-7 and Penguins each method appears twice per seed. The first block (in file order) is the run on the original views, which gives Table 23; the second block is the run with the random binary nuisance view added. Do not average the two blocks together.
 

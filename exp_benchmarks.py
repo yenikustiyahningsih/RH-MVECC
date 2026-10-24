@@ -1,6 +1,6 @@
 """Reviewer 2 comment 3, Reviewer 3 comments 2 and 5: public multi-view benchmarks with ground truth.
 
-Datasets (benchmarks/): 3Sources, BBCSport, MSRC-v5, Handwritten (UCI mfeat), Caltech101-7,
+Datasets (benchmarks/): 3Sources, BBCSport, NGs (20 Newsgroups subset), MSRC-v5, Handwritten (UCI mfeat), Caltech101-7,
 and Palmer Penguins as a small *heterogeneous mixed-type* benchmark (binary/categorical + continuous views).
 Metrics: ACC (Hungarian), NMI, ARI, Purity; mean +- SD over 5 seeds.
 
@@ -29,7 +29,9 @@ from sklearn.neighbors import kneighbors_graph
 
 from rhmvecc.core import Config, RHMVECC, consensus_cut, kmeans, view_stage, vdi
 
-TEXT = {"3Sources", "BBCSport"}
+TEXT = {"3Sources", "BBCSport", "NGs"}
+# file name of a dataset when it differs from its name (NGs = 20 Newsgroups subset, 500 documents, 3 views, 5 classes)
+FILES = {"NGs": "20newsgroups.mat"}
 
 
 def acc(y, z):
@@ -50,7 +52,7 @@ def scores(y, z):
 def load_mat(path):
     d = sio.loadmat(path)
     Xs = [np.asarray(v.toarray() if hasattr(v, "toarray") else v, float) for v in d["X"].ravel()]
-    y = np.asarray(d["y"]).ravel().astype(int)
+    y = np.asarray(d["y"] if "y" in d else d["Y"]).ravel().astype(int)
     # some files store views as d x n
     Xs = [X if X.shape[0] == len(y) else X.T for X in Xs]
     return Xs, y
@@ -154,14 +156,14 @@ def main():
     ap.add_argument("--only", default="")
     a = ap.parse_args(); out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     seeds = list(range(a.seeds))
-    names = ["3Sources", "BBCSport", "MSRC-v5", "Penguins", "Caltech101-7", "Handwritten"]
+    names = ["3Sources", "BBCSport", "NGs", "MSRC-v5", "Penguins", "Caltech101-7", "Handwritten"]
     if a.only: names = a.only.split(",")
     for name in names:
         rows, extra = [], []
         if name == "Penguins":
             x, views, y = load_penguins(Path(a.data) / "penguins.csv")
         else:
-            Xs, y = load_mat(Path(a.data) / f"{name}.mat")
+            Xs, y = load_mat(Path(a.data) / FILES.get(name, f"{name}.mat"))
             x, views = preprocess(Xs, name in TEXT)
         run_dataset(name, x, views, y, seeds, a.repeats, rows, extra)
         if name in ("Handwritten", "Caltech101-7", "Penguins"):
