@@ -1,0 +1,2 @@
+pairs,mean_ARI,median_ARI,share_ARI_gt_0_9,n_pairs_ARI_gt_0_99,partitions_with_near_duplicate
+990,0.28780845372985114,0.16228720158435278,0.026262626262626262,8,10

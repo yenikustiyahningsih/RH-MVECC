@@ -1,0 +1,7 @@
+method,seconds
+K-Means,0.06654985099999067
+GMM,0.11452202599991779
+Ward hierarchical,0.3787793760000113
+Gower-average,0.6883868090000078
+RH consensus step,1.947275442000091
+RH-MVECC view stage + library + consensus (all K),12.410513596999976

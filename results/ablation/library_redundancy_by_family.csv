@@ -1,0 +1,10 @@
+family_a,family_b,mean_ARI
+Full,Full,0.5551057852423021
+Full,Weighted,0.5437000060676711
+Full,ViewSpecific,0.13726710207389156
+Weighted,Full,0.5437000060676711
+Weighted,Weighted,0.5842590938518633
+Weighted,ViewSpecific,0.15064162164088005
+ViewSpecific,Full,0.13726710207389156
+ViewSpecific,Weighted,0.15064162164088005
+ViewSpecific,ViewSpecific,0.14384295366723635

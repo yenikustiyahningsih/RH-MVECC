@@ -1,0 +1,105 @@
+{
+  "n": 2896,
+  "p": 8,
+  "selected_K": 6,
+  "metrics": {
+    "SC": 0.38850279985114833,
+    "DBI": 1.0250839690921802,
+    "CHI": 1233.9915814949181,
+    "ARI_mean": 0.990012500237388,
+    "ARI_ci_low": 0.9879250158212197,
+    "ARI_ci_high": 0.9920999846535562,
+    "NMI_mean": 0.9817496143211468,
+    "VDI": 0.7823038030222428
+  },
+  "view_weights": {
+    "V1": 0.179804,
+    "V2": 0.303137,
+    "V3": 0.271881,
+    "V4": 0.245178
+  },
+  "seconds_total": 144.85052197800007,
+  "input_sha256": "d48faa8258de702967583a150e110c1b111a74d58d9b0b682984ca73465b8abc",
+  "python": "3.13.16",
+  "numpy": "2.5.3",
+  "pandas": "3.0.5",
+  "sklearn": "1.9.1",
+  "scipy": "1.18.1",
+  "config": {
+    "ks": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "view_k_max": 6,
+    "view_ref_k_max": 10,
+    "kmeans_n_init": 20,
+    "seed": 42,
+    "view_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "view_n_init_T": null,
+    "gmm_cov": "full",
+    "full_methods": [
+      "KMeans",
+      "GMM"
+    ],
+    "families": [
+      "Full",
+      "Weighted",
+      "ViewSpecific"
+    ],
+    "alpha": 0.5,
+    "beta": 1.0,
+    "eps": 0.1,
+    "use_T": true,
+    "use_GH": true,
+    "view_weight_mode": "reliability",
+    "family_balance": true,
+    "tau": 0.85,
+    "comp_w": [
+      0.3,
+      0.25,
+      0.15,
+      0.2,
+      0.1
+    ],
+    "use_vdi_threshold": true,
+    "resample_frac": 0.8,
+    "resample_seed": 123,
+    "repeats": 50
+  },
+  "seeds": {
+    "kmeans_gmm_random_state": 42,
+    "view_stability_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "library_resampling_seed": 123,
+    "weight_perturbation": "same numpy Generator(seed=123) stream, after the resampling draws",
+    "bootstrap_vs_kmeans_seed": 2024
+  }
+}
