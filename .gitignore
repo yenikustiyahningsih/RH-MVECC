@@ -4,6 +4,6 @@ hasil_saya/
 *.mat
 *.zip
 
-exp_marketing.py
-results/marketing/
-data/marketing_campaign_rapi.xlsx
+# exp_marketing.py
+# results/marketing/
+# data/marketing_campaign_rapi.xlsx

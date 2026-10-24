@@ -1,0 +1,119 @@
+{
+  "n": 2240,
+  "p": 25,
+  "views": {
+    "V1": 6,
+    "V2": 6,
+    "V3": 7,
+    "V4": 6
+  },
+  "selected_K": 2,
+  "metrics": {
+    "SC": 0.2178706223836722,
+    "DBI": 1.753424182913487,
+    "CHI": 690.9262142651315,
+    "ARI_mean": 0.9494589457027094,
+    "ARI_ci_low": 0.9246401872763604,
+    "ARI_ci_high": 0.9742777041290583,
+    "NMI_mean": 0.9227888400035935,
+    "VDI": 0.7038855078178891
+  },
+  "vdi_profile": {
+    "V1": 0.00016383700403496289,
+    "V2": 0.7038855078178891,
+    "V3": 0.6021702192876021,
+    "V4": 0.0851952568822291
+  },
+  "view_weights": {
+    "V1": 0.291322,
+    "V2": 0.298139,
+    "V3": 0.261131,
+    "V4": 0.149408
+  },
+  "preprocessing": {
+    "unmapped_education": 0,
+    "income_missing_imputed_median": 24,
+    "winsorised_Age": 34,
+    "winsorised_Income": 46,
+    "winsorised_MntWines": 35,
+    "winsorised_MntFruits": 21,
+    "winsorised_MntMeatProducts": 37,
+    "winsorised_MntFishProducts": 23,
+    "winsorised_MntSweetProducts": 23,
+    "winsorised_MntGoldProds": 22,
+    "winsorised_NumDealsPurchases": 19,
+    "winsorised_NumWebPurchases": 4,
+    "winsorised_NumCatalogPurchases": 23,
+    "winsorised_NumStorePurchases": 22,
+    "winsorised_NumWebVisitsMonth": 23,
+    "winsorised_Recency": 17,
+    "winsorised_Tenure": 43,
+    "reference_date": "2014-06-29"
+  },
+  "seconds_total": 102.33936809999977,
+  "input_sha256": "6239fbaeb46f5205fba13640cc219ca9b8238206ea7d3d36a53c63d411047bed",
+  "python": "3.11.9",
+  "numpy": "1.26.4",
+  "pandas": "2.2.2",
+  "sklearn": "1.4.2",
+  "scipy": "1.13.0",
+  "config": {
+    "ks": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "view_k_max": 6,
+    "view_ref_k_max": 10,
+    "kmeans_n_init": 20,
+    "seed": 42,
+    "view_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "view_n_init_T": null,
+    "gmm_cov": "full",
+    "full_methods": [
+      "KMeans",
+      "GMM"
+    ],
+    "families": [
+      "Full",
+      "Weighted",
+      "ViewSpecific"
+    ],
+    "alpha": 0.5,
+    "beta": 1.0,
+    "eps": 0.1,
+    "use_T": true,
+    "use_GH": true,
+    "view_weight_mode": "reliability",
+    "family_balance": true,
+    "tau": 0.85,
+    "comp_w": [
+      0.3,
+      0.25,
+      0.15,
+      0.2,
+      0.1
+    ],
+    "use_vdi_threshold": true,
+    "resample_frac": 0.8,
+    "resample_seed": 123,
+    "repeats": 50
+  }
+}
