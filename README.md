@@ -26,6 +26,24 @@ Expected output in `results/main_rerun/summary.json`:
 | View weights V1 / V2 / V3 / V4 | 0.1798 / 0.3031 / 0.2719 / 0.2452 |
 | input SHA-256 | d48faa8258de702967583a150e110c1b111a74d58d9b0b682984ca73465b8abc |
 
+## Where each manuscript table and figure comes from
+
+Scripts that read `results/main/` (`exp_vdi_share.py`, `exp_nuisance_detail.py`, `exp_library_redundancy.py`, `make_figures.py`) must be run after `run_msme.py --out results/main`, in the order given under "Running all experiments".
+
+| Manuscript | Script | Raw output |
+|---|---|---|
+| Tables 1–3 (research gap, views, library composition) | descriptive, no script | none |
+| Tables 4–14, Fig. 2–4 (data, selection, baselines, stability, ablation, runtime, profiles) | `run_msme.py` | `results/main/` |
+| Table 7, SVS column (Eq. 12) | `exp_vdi_share.py` | `results/vdi/single_view_share_by_K.csv` |
+| Tables 15–16 (information decomposition, reference partitions), Fig. 5 | `exp_vdi_diagnostics.py` | `results/vdi/` |
+| Table 17 (nuisance view) | `exp_nuisance_detail.py` | `results/vdi/` |
+| Tables 18–20 (simpler ablations, selection rules, alpha/beta/adaptive/epsilon) and T_v effect | `exp_ablation_sensitivity.py` | `results/ablation/` |
+| Redundancy of the 45 base partitions (Section 5.7) | `exp_library_redundancy.py` | `results/ablation/` |
+| Table 21 (three stability procedures) | `exp_stability.py` | `results/stability/` |
+| Tables 22–23, Fig. 6 (public benchmarks) | `exp_benchmarks.py`, `exp_penguins_svs.py` | `results/benchmarks/` |
+| Tables 24–25 (marketing data) | `exp_marketing.py` | `results/marketing/` |
+| Fig. 2–6 (final versions) | `make_figures.py` | `results/figures/` |
+
 ## Structure
 
 | File | Purpose | Reviewer comment |
@@ -265,6 +283,8 @@ Reading: no ablated variant is clearly worse than the full method, and the full 
 | SC only, with threshold tau = 0.85 | 6 | 0.3885 | 1.0251 | 1234.0 | 0.9906 | 0.7823 |
 | RH-MVECC rule (composite + threshold) | 6 | 0.3885 | 1.0251 | 1234.0 | 0.9906 | 0.7823 |
 
+Note: the "Stability ARI" column of this table (0.9906 at K = 6) comes from `exp_ablation_sensitivity.py --repeats 20`, i.e. 20 resampling draws per K, whereas the main result (0.9900, 95% CI 0.9879–0.9921) uses 50 draws; the small difference is due to the number of draws.
+
 Reading: single-index rules choose different K (SC only: 3; DBI only: 8; CHI only: 2) with lower stability (ARI 0.89-0.94). SC only selects K = 3, which has VDI 0.9347 > tau = 0.85 and is excluded by the threshold. The composite score already selects K = 6 without the VDI term and without the threshold, so the threshold changes the outcome only for the SC-only rule.
 
 ### Sensitivity to alpha, beta (Eq. 4), the adaptive alternative, and epsilon (Eq. 7) (R3-3, R3-4)
@@ -437,9 +457,9 @@ Reading: this is a negative result for dominance control.
 
 Provenance: the original workbook `data_prep_2896.xlsm` is not included in this repository. The file above was rebuilt from the `assignments` sheet of an earlier run (values rounded to 6 decimals), and its `MinMax_Info` sheet (original-scale minima and maxima) was back-solved from the reported original-scale profiles. Running the code on it reproduces the results reported in the manuscript (table above). The original-scale profiles (Table 14) depend on the back-solved parameters.
 
-Marketing data: not stored in this repository. The public Kaggle dataset "Marketing Campaign" by Rodolfo Saldanha (`marketing_campaign.csv`, 2,240 rows, 29 columns; https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign; licence on Kaggle: "Other (specified in description)") must be downloaded from Kaggle by the user, who is responsible for respecting the terms stated on that page. The cleaned input used for the second application, `data/marketing_campaign_rapi.xlsx`, is derived from that file; the preprocessing steps are recorded in `results/marketing/summary.json` (median imputation of 24 missing `Income` values, winsorisation of continuous features, reference date 2014-06-29 for age and tenure).
+Marketing data: the original public Kaggle dataset "Marketing Campaign" by Rodolfo Saldanha (`marketing_campaign.csv`, 2,240 rows, 29 columns; https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign; licence on Kaggle: "Other (specified in description)") is not redistributed here and must be downloaded from Kaggle by the user, who is responsible for respecting the terms stated on that page. The cleaned input used for the second application, `data/marketing_campaign_rapi.xlsx`, is derived from that file and is included only so that the reported results can be verified (SHA-256 given above); the preprocessing steps are recorded in `results/marketing/summary.json` (median imputation of 24 missing `Income` values, winsorisation of continuous features, reference date 2014-06-29 for age and tenure).
 
-Benchmarks (`benchmarks/`): 3Sources, BBCSport, MSRC-v5, Handwritten and Caltech101-7 (.mat files from https://github.com/ChuanbinZhang/Multi-view-datasets; checksums in `benchmarks/SHA256SUMS.txt`), NGs (the 20 Newsgroups subset with 500 documents, 3 views of 2,000 features and 5 balanced classes; file `20newsgroups.mat` from https://github.com/zskong/Multi-view-data, SHA-256 `99bd0802...`) and Palmer Penguins (https://github.com/mwaskom/seaborn-data). Any `.mat` file with a cell array `X` (views) and a label vector `y` (e.g. NGs) can be added to `exp_benchmarks.py` by extending the dataset list.
+Benchmarks (`benchmarks/`): 3Sources, BBCSport, MSRC-v5, Handwritten and Caltech101-7 (.mat files from https://github.com/ChuanbinZhang/Multi-view-datasets; checksums in `benchmarks/SHA256SUMS.txt`), NGs (the 20 Newsgroups subset with 500 documents, 3 views of 2,000 features and 5 balanced classes; file `20newsgroups.mat` from https://github.com/zskong/Multi-view-data, SHA-256 `99bd0802e3ed647e7d1f17ae56554a8def0181aefb58e370050630a773db4629`) and Palmer Penguins (https://github.com/mwaskom/seaborn-data). Any `.mat` file with a cell array `X` (views) and a label vector `y` (e.g. NGs) can be added to `exp_benchmarks.py` by extending the dataset list.
 
 Note on `results/benchmarks/bench_*.csv`: for Handwritten, Caltech101-7 and Penguins each method appears twice per seed. The first block (in file order) is the run on the original views, which gives Table 23; the second block is the run with the random binary nuisance view added. Do not average the two blocks together.
 
