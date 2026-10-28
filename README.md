@@ -50,6 +50,7 @@ Scripts that read `results/main/` (`exp_vdi_share.py`, `exp_nuisance_detail.py`,
 |---|---|---|
 | `rhmvecc/core.py` | Library: views, reliability (Eq. 2–5), 45-partition library, partition weights (Eq. 6–7), weighted co-association (Eq. 8–9), VDI (Eq. 10), selection (Eq. 11), stability. Every design constant is a `Config` field. | all |
 | `rhmvecc/msme.py` | MSME loader (`MinMax_2896` + `MinMax_Info` sheets, or CSV) | R2-4 |
+| `prep_data.py` | Rebuilds the normalised MSME matrix from the original records (authorised holders only); documents every preparation step | R2-4 |
 | `run_msme.py` | Main experiment: Tables 4–14, Fig. 2–4, paired bootstrap vs K-Means, threshold and weight sensitivity | R2-3, R2-5 |
 | `exp_vdi_diagnostics.py` | NMI profile, information decomposition, surrogate trees, reference partitions, nuisance-view injection | R2-2, R3-1 |
 | `exp_nuisance_detail.py`, `exp_penguins_svs.py`, `exp_library_redundancy.py` | Nuisance K-scan (Table 17), Penguins VDI vs SVS, library pairwise ARI | R2-2, R2-3 |
@@ -76,6 +77,7 @@ python exp_benchmarks.py --data benchmarks --out results/benchmarks --only Calte
 python exp_penguins_svs.py
 python exp_nuisance_detail.py $D
 python exp_library_redundancy.py
+# the cleaned marketing file is not included in this repository (see "Data")
 python exp_marketing.py          --input data/marketing_campaign_rapi.xlsx --out results/marketing
 python make_figures.py
 ```
@@ -99,7 +101,7 @@ The labelled benchmarks use ground truth only for evaluation (ACC, NMI, ARI, pur
 
 ## Second application: Customer Personality Analysis (public marketing data)
 
-To check that the framework is not specific to the MSME data, RH-MVECC was applied without modification to the public Customer Personality Analysis dataset (Kaggle, `marketing_campaign`): 2,240 customers, 25 features, four views (V1 profile, V2 product spending, V3 channels and engagement, V4 campaign-response history). The `Response` column is not used as a feature. No ground-truth labels exist, so only internal indices, stability and VDI are reported (no ACC/NMI).
+To check that the framework is not specific to the MSME data, RH-MVECC was applied without modification to the public Customer Personality Analysis dataset (Kaggle, `marketing_campaign`): 2,240 customers, 25 features, four views (V1 profile, V2 product spending, V3 channels and engagement, V4 campaign-response history). The `Response` column is not used as a feature. No ground-truth labels exist, so only internal indices, stability and VDI are reported (no ACC/NMI). The Kaggle file and the cleaned input derived from it are not included in this repository (see "Data").
 
 ```bash
 python exp_marketing.py --input data/marketing_campaign_rapi.xlsx --out results/marketing_rerun
@@ -156,7 +158,7 @@ Reasons:
 3. **Likely cause: the nature of the data (not tested separately).** The MSME attributes are mostly binary, ordinal or discrete, so the data form a limited number of patterns (view V1 has only 4 unique patterns) and distinct groups. The marketing attributes are largely continuous, so customers blend into each other and separate into only K = 2 groups.
 4. **VDI is the exception.** It is lower on marketing (0.7039 versus 0.7823), but the selected K differs (2 versus 6) and VDI depends on K, so this difference is not a like-for-like comparison.
 
-Caveats: the two datasets differ in size, feature types and selected K, so these numbers show which dataset has the clearer cluster structure, not which method is better; CHI in particular depends on n and K and should be read as supporting evidence only. On the method question, RH-MVECC is on par with K-Means on both datasets (see below). The MSME matrix used is the reconstructed file described under Data.
+Caveats: the two datasets differ in size, feature types and selected K, so these numbers show which dataset has the clearer cluster structure, not which method is better; CHI in particular depends on n and K and should be read as supporting evidence only. On the method question, RH-MVECC is on par with K-Means on both datasets (see below). The MSME matrix used is the deposited anonymised matrix described under Data.
 
 Side-by-side details:
 
@@ -246,7 +248,7 @@ Overall reading, consistent with the MSME and marketing results: RH-MVECC is com
 
 ## Ablation, sensitivity, stability and VDI diagnostics: re-run results
 
-Re-run on the reconstructed MSME matrix (input SHA-256 `d48faa82...`), Python 3.11.9, scikit-learn 1.9.1, with `exp_ablation_sensitivity.py --repeats 20`, `exp_vdi_diagnostics.py` and `exp_stability.py`. Raw outputs: `results/ablation/`, `results/vdi/`, `results/stability/`. P* denotes the RH-MVECC partition at K = 6.
+Re-run on the deposited MSME matrix (input SHA-256 `d48faa82...`), Python 3.11.9, scikit-learn 1.9.1, with `exp_ablation_sensitivity.py --repeats 20`, `exp_vdi_diagnostics.py` and `exp_stability.py`. Raw outputs: `results/ablation/`, `results/vdi/`, `results/stability/`. P* denotes the RH-MVECC partition at K = 6.
 
 ### Simpler ablation baselines (R2-3)
 
@@ -455,9 +457,21 @@ Reading: this is a negative result for dominance control.
 
 `data/data_prep_2896_reconstructed.xlsx` holds the anonymised, min-max normalised MSME matrix (2,896 × 8, sequential identifiers only) in the sheets `MinMax_2896` and `MinMax_Info`. The SHA-256 of the input file is written to `summary.json`.
 
-Provenance: the original workbook `data_prep_2896.xlsm` is not included in this repository. The file above was rebuilt from the `assignments` sheet of an earlier run (values rounded to 6 decimals), and its `MinMax_Info` sheet (original-scale minima and maxima) was back-solved from the reported original-scale profiles. Running the code on it reproduces the results reported in the manuscript (table above). The original-scale profiles (Table 14) depend on the back-solved parameters.
+**Provenance.** The original records come from the Investment and One-Stop Integrated Service Office (DPMPTSP) of Sampang Regency (2,896 MSMEs; data taken on 18 September 2025). They contain owner and business names and cannot be released, so they are not included in this repository or in any release; only the anonymised matrix above is distributed. `prep_data.py` documents every preparation step (employee cap at 6, winsorisation at the upper Tukey fence on the original scale, log1p for revenue and assets, platform counts for social media and marketplace, min-max normalisation) and can be run on the original file by anyone who holds an authorised copy. The deposited matrix stores the resulting values rounded to six decimals; it reproduces every result in the manuscript (see the table under "Quick check"), and its `MinMax_Info` sheet agrees with the minima and maxima computed from the original records. Running `prep_data.py` directly on the original file gives values that differ from the deposited matrix in the third or fourth decimal (ARI 0.998 between the resulting partition and the reported one).
 
-Marketing data: the original public Kaggle dataset "Marketing Campaign" by Rodolfo Saldanha (`marketing_campaign.csv`, 2,240 rows, 29 columns; https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign; licence on Kaggle: "Other (specified in description)") is not redistributed here and must be downloaded from Kaggle by the user, who is responsible for respecting the terms stated on that page. The cleaned input used for the second application, `data/marketing_campaign_rapi.xlsx`, is derived from that file and is included only so that the reported results can be verified (SHA-256 given above); the preprocessing steps are recorded in `results/marketing/summary.json` (median imputation of 24 missing `Income` values, winsorisation of continuous features, reference date 2014-06-29 for age and tenure).
+**Marketplace coding.** In the matrix used for all reported results, the 191 records whose only marketplace is TikTok Shop are coded as two platforms (they should be one). Recoding them as one (`--marketplace-coding corrected`) leaves the selected K at 6 and gives SC 0.4043, DBI 0.9948, CHI 1337.9 and VDI 0.7786, with ARI 0.984 against the reported partition. The reported results and the deposited matrix use the original coding (`as_analyzed`, the default).
+
+**Rebuilding the matrix from the original records (authorised users only).** Keep the original file outside version control (names matching `dataset_2896*.xlsx` and `*.xlsm` are ignored by `.gitignore`):
+
+```bash
+python prep_data.py --input dataset_2896.xlsx --output prep_out/data_prep_2896.xlsx
+python prep_data.py --input dataset_2896.xlsx --output prep_out/data_prep_2896_corrected.xlsx --marketplace-coding corrected
+python run_msme.py  --input prep_out/data_prep_2896.xlsx --out results/rebuilt_rerun
+```
+
+The script prints the checks of Section 4.1 (29 employee records recoded, capacity fence 1,302.5 with 387 records clipped, 191 TikTok-Shop-only records), writes the SHA-256 of the input file to the `Run_Info` sheet, and never copies owner or business names into the output (records receive sequential identifiers UMKM-0001, UMKM-0002, ...). Column names of the original file are detected by keyword; if one cannot be identified the script stops and asks for `--map KEY=COLUMN`. `--compare data/data_prep_2896_reconstructed.xlsx` prints the difference to the deposited matrix.
+
+**Marketing data (not included).** The public Kaggle dataset "Marketing Campaign" by Rodolfo Saldanha (`marketing_campaign.csv`, 2,240 rows, 29 columns; https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign; licence on Kaggle: "Other (specified in description)") is not redistributed here and must be downloaded from Kaggle by the user, who is responsible for respecting the terms stated on that page. The cleaned input derived from it (`data/marketing_campaign_rapi.xlsx`) and the derived files `results/marketing/marketing_normalized.csv` and `results/marketing/assignments.csv` are likewise not included. The preprocessing steps are recorded in `results/marketing/summary.json` (median imputation of 24 missing `Income` values, winsorisation of continuous features, reference date 2014-06-29 for age and tenure), and the SHA-256 of the cleaned input used for the reported results is given under "Second application" so that a rebuilt file can be checked.
 
 Benchmarks (`benchmarks/`): 3Sources, BBCSport, MSRC-v5, Handwritten and Caltech101-7 (.mat files from https://github.com/ChuanbinZhang/Multi-view-datasets; checksums in `benchmarks/SHA256SUMS.txt`), NGs (the 20 Newsgroups subset with 500 documents, 3 views of 2,000 features and 5 balanced classes; file `20newsgroups.mat` from https://github.com/zskong/Multi-view-data, SHA-256 `99bd0802e3ed647e7d1f17ae56554a8def0181aefb58e370050630a773db4629`) and Palmer Penguins (https://github.com/mwaskom/seaborn-data). Any `.mat` file with a cell array `X` (views) and a label vector `y` (e.g. NGs) can be added to `exp_benchmarks.py` by extending the dataset list.
 
@@ -467,3 +481,7 @@ Note on `results/benchmarks/bench_*.csv`: for Handwritten, Caltech101-7 and Peng
 
 * Numbers now come from one released code base; small differences from the first-submission tables (e.g. SC 0.3887→0.3885, VDI 0.7794→0.7823, V4 reference K 8→10, cluster sizes ±1–2) are due to the first submission having been produced with an unreleased script.
 * Cluster numbers are ordered by size.
+
+## Citation
+
+See `CITATION.cff` (GitHub: "Cite this repository").

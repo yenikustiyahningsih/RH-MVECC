@@ -4,7 +4,12 @@ hasil_saya/
 *.mat
 *.zip
 
-# exp_marketing.py
+# Original MSME records (contain owner and business names): NEVER commit
+dataset_2896*.xlsx
+*.xlsm
+
+# Marketing data derived from the Kaggle dataset: not redistributed
+# (exp_marketing.py reads data/marketing_campaign_rapi.xlsx from the user's own copy)
 # results/marketing/
 data/marketing_campaign_rapi.xlsx
 results/marketing/marketing_normalized.csv

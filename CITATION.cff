@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+title: "RH-MVECC: Reliability-Weighted Heterogeneous Multi-View Ensemble Consensus Clustering with View-Dominance Control"
+type: software
+authors:
+  - family-names: "Kustiyahningsih"
+    given-names: "Yeni"
+    email: "ykustiyahningsih@trunojoyo.ac.id"
+    affiliation: "Department of Information Systems, Universitas Trunojoyo Madura, Indonesia"
+  - family-names: "Rahmanita"
+    given-names: "Eza"
+    affiliation: "Department of Information Systems, Universitas Trunojoyo Madura, Indonesia"
+  - family-names: "Purnama"
+    given-names: "Jaka"
+    affiliation: "Department of Industrial Engineering, Universitas 17 Agustus 1945 Surabaya, Indonesia"
+  - family-names: "Damayanti"
+    given-names: "Fitri"
+    affiliation: "Department of Information Systems, Universitas Trunojoyo Madura, Indonesia"
+  - family-names: "Rachmad"
+    given-names: "Aeri"
+    affiliation: "Department of Information Systems, Universitas Trunojoyo Madura, Indonesia"
+repository-code: "https://github.com/yenikustiyahningsih/RH-MVECC"
+abstract: "Code, random seeds and raw outputs for the RH-MVECC manuscript submitted to Array: reliability-weighted multi-view ensemble consensus clustering with view-dominance control, applied to MSME segmentation and public multi-view benchmarks. The original MSME records contain personal information and are not included; an anonymised normalised matrix is provided."
+keywords:
+  - multi-view clustering
+  - ensemble clustering
+  - consensus clustering
+  - view-dominance control
+  - MSME segmentation
