@@ -51,6 +51,7 @@ Scripts that read `results/main/` (`exp_vdi_share.py`, `exp_nuisance_detail.py`,
 | `rhmvecc/core.py` | Library: views, reliability (Eq. 2–5), 45-partition library, partition weights (Eq. 6–7), weighted co-association (Eq. 8–9), VDI (Eq. 10), selection (Eq. 11), stability. Every design constant is a `Config` field. | all |
 | `rhmvecc/msme.py` | MSME loader (`MinMax_2896` + `MinMax_Info` sheets, or CSV) | R2-4 |
 | `prep_data.py` | Rebuilds the normalised MSME matrix from the original records (authorised holders only); documents every preparation step | R2-4 |
+| `check_repo_privacy.py` | Scans `data/` and `results/` for owner/business-name or address columns before publishing | R2-4 |
 | `run_msme.py` | Main experiment: Tables 4–14, Fig. 2–4, paired bootstrap vs K-Means, threshold and weight sensitivity | R2-3, R2-5 |
 | `exp_vdi_diagnostics.py` | NMI profile, information decomposition, surrogate trees, reference partitions, nuisance-view injection | R2-2, R3-1 |
 | `exp_nuisance_detail.py`, `exp_penguins_svs.py`, `exp_library_redundancy.py` | Nuisance K-scan (Table 17), Penguins VDI vs SVS, library pairwise ARI | R2-2, R2-3 |
@@ -77,7 +78,7 @@ python exp_benchmarks.py --data benchmarks --out results/benchmarks --only Calte
 python exp_penguins_svs.py
 python exp_nuisance_detail.py $D
 python exp_library_redundancy.py
-# the cleaned marketing file is not included in this repository (see "Data")
+# the cleaned marketing file is not included in the current version of this repository (see "Data")
 python exp_marketing.py          --input data/marketing_campaign_rapi.xlsx --out results/marketing
 python make_figures.py
 ```
@@ -101,7 +102,7 @@ The labelled benchmarks use ground truth only for evaluation (ACC, NMI, ARI, pur
 
 ## Second application: Customer Personality Analysis (public marketing data)
 
-To check that the framework is not specific to the MSME data, RH-MVECC was applied without modification to the public Customer Personality Analysis dataset (Kaggle, `marketing_campaign`): 2,240 customers, 25 features, four views (V1 profile, V2 product spending, V3 channels and engagement, V4 campaign-response history). The `Response` column is not used as a feature. No ground-truth labels exist, so only internal indices, stability and VDI are reported (no ACC/NMI). The Kaggle file and the cleaned input derived from it are not included in this repository (see "Data").
+To check that the framework is not specific to the MSME data, RH-MVECC was applied without modification to the public Customer Personality Analysis dataset (Kaggle, `marketing_campaign`): 2,240 customers, 25 features, four views (V1 profile, V2 product spending, V3 channels and engagement, V4 campaign-response history). The `Response` column is not used as a feature. No ground-truth labels exist, so only internal indices, stability and VDI are reported (no ACC/NMI). The Kaggle file and the cleaned input derived from it are not included in the current version of this repository (see "Data").
 
 ```bash
 python exp_marketing.py --input data/marketing_campaign_rapi.xlsx --out results/marketing_rerun
@@ -471,7 +472,7 @@ python run_msme.py  --input prep_out/data_prep_2896.xlsx --out results/rebuilt_r
 
 The script prints the checks of Section 4.1 (29 employee records recoded, capacity fence 1,302.5 with 387 records clipped, 191 TikTok-Shop-only records), writes the SHA-256 of the input file to the `Run_Info` sheet, and never copies owner or business names into the output (records receive sequential identifiers UMKM-0001, UMKM-0002, ...). Column names of the original file are detected by keyword; if one cannot be identified the script stops and asks for `--map KEY=COLUMN`. `--compare data/data_prep_2896_reconstructed.xlsx` prints the difference to the deposited matrix.
 
-**Marketing data (not included).** The public Kaggle dataset "Marketing Campaign" by Rodolfo Saldanha (`marketing_campaign.csv`, 2,240 rows, 29 columns; https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign; licence on Kaggle: "Other (specified in description)") is not redistributed here and must be downloaded from Kaggle by the user, who is responsible for respecting the terms stated on that page. The cleaned input derived from it (`data/marketing_campaign_rapi.xlsx`) and the derived files `results/marketing/marketing_normalized.csv` and `results/marketing/assignments.csv` are likewise not included. The preprocessing steps are recorded in `results/marketing/summary.json` (median imputation of 24 missing `Income` values, winsorisation of continuous features, reference date 2014-06-29 for age and tenure), and the SHA-256 of the cleaned input used for the reported results is given under "Second application" so that a rebuilt file can be checked.
+**Marketing data (not included).** The public Kaggle dataset "Marketing Campaign" by Rodolfo Saldanha (`marketing_campaign.csv`, 2,240 rows, 29 columns; https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign; licence on Kaggle: "Other (specified in description)") is not redistributed here and must be downloaded from Kaggle by the user, who is responsible for respecting the terms stated on that page. The cleaned input derived from it (`data/marketing_campaign_rapi.xlsx`) and the derived files `results/marketing/marketing_normalized.csv` and `results/marketing/assignments.csv` are likewise not included in the current version of this repository. The preprocessing steps are recorded in `results/marketing/summary.json` (median imputation of 24 missing `Income` values, winsorisation of continuous features, reference date 2014-06-29 for age and tenure), and the SHA-256 of the cleaned input used for the reported results is given under "Second application" so that a rebuilt file can be checked.
 
 Benchmarks (`benchmarks/`): 3Sources, BBCSport, MSRC-v5, Handwritten and Caltech101-7 (.mat files from https://github.com/ChuanbinZhang/Multi-view-datasets; checksums in `benchmarks/SHA256SUMS.txt`), NGs (the 20 Newsgroups subset with 500 documents, 3 views of 2,000 features and 5 balanced classes; file `20newsgroups.mat` from https://github.com/zskong/Multi-view-data, SHA-256 `99bd0802e3ed647e7d1f17ae56554a8def0181aefb58e370050630a773db4629`) and Palmer Penguins (https://github.com/mwaskom/seaborn-data). Any `.mat` file with a cell array `X` (views) and a label vector `y` (e.g. NGs) can be added to `exp_benchmarks.py` by extending the dataset list.
 
