@@ -1,6 +1,8 @@
 # RH-MVECC: code, seeds and results
 
-Reliability-Weighted Heterogeneous Multi-View Ensemble Consensus Clustering with View-Dominance Control, applied to MSME segmentation and checked on seven public labelled benchmarks. This repository contains the dataset-agnostic library (`rhmvecc/`), one script per experiment, all random seeds, and the raw outputs of every experiment reported in the revised manuscript submitted to *Array*.
+Code and results accompanying the paper **"Reliability-Weighted Heterogeneous Multi-View Ensemble Consensus Clustering with View-Dominance Control for Robust MSME Segmentation"** by Yeni Kustiyahningsih, Eza Rahmanita, Jaka Purnama, Fitri Damayanti and Aeri Rachmad, submitted to *Array* (manuscript ARRAY-D-26-05994). Corresponding author: Yeni Kustiyahningsih (ykustiyahningsih@trunojoyo.ac.id).
+
+RH-MVECC is applied to MSME segmentation (2,896 MSMEs, Sampang Regency, Indonesia) and checked on seven public labelled benchmarks. This repository contains the dataset-agnostic library (`rhmvecc/`), one script per experiment, all random seeds, and the raw outputs of every experiment reported in the revised manuscript.
 
 ## Requirements
 
@@ -25,6 +27,15 @@ Expected output in `results/main_rerun/summary.json`:
 | VDI | 0.7823 |
 | View weights V1 / V2 / V3 / V4 | 0.1798 / 0.3031 / 0.2719 / 0.2452 |
 | input SHA-256 | d48faa8258de702967583a150e110c1b111a74d58d9b0b682984ca73465b8abc |
+
+### Quick check on a public benchmark (no MSME data needed)
+
+```bash
+bash benchmarks/download_benchmarks.sh     # fetches the public files; Penguins alone needs only penguins.csv
+python exp_benchmarks.py --data benchmarks --out results/benchmarks_check --only Penguins
+```
+
+Expected for RH-MVECC (K = C) on Penguins: ACC 0.703, NMI 0.502, ARI 0.383 (identical to concatenated K-Means; see Table 23).
 
 ## Where each manuscript table and figure comes from
 
@@ -455,6 +466,10 @@ Note on `results/benchmarks/bench_*.csv`: for Handwritten, Caltech101-7 and Peng
 
 * Numbers now come from one released code base; small differences from the first-submission tables (e.g. SC 0.3887→0.3885, VDI 0.7794→0.7823, V4 reference K 8→10, cluster sizes ±1–2) are due to the first submission having been produced with an unreleased script.
 * Cluster numbers are ordered by size.
+
+## License
+
+The code in this repository is released under the MIT License (see `LICENSE`). The license covers the code and the anonymised MSME matrix deposited by the authors. The public benchmark datasets are not redistributed here and keep the terms of their original sources (see "Data").
 
 ## Citation
 
