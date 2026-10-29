@@ -2,6 +2,10 @@ cff-version: 1.2.0
 message: "If you use this code, please cite it as below."
 title: "RH-MVECC: Reliability-Weighted Heterogeneous Multi-View Ensemble Consensus Clustering with View-Dominance Control"
 type: software
+version: "v1.0-revision1"
+doi: 10.5281/zenodo.23752262
+date-released: 2026-10-29
+license: MIT
 authors:
   - family-names: "Kustiyahningsih"
     given-names: "Yeni"

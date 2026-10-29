@@ -1,6 +1,10 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23752262.svg)](https://doi.org/10.5281/zenodo.23752262)
+
 # RH-MVECC: code, seeds and results
 
 Code and results accompanying the paper **"Reliability-Weighted Heterogeneous Multi-View Ensemble Consensus Clustering with View-Dominance Control for Robust MSME Segmentation"** by Yeni Kustiyahningsih, Eza Rahmanita, Jaka Purnama, Fitri Damayanti and Aeri Rachmad, submitted to *Array* (manuscript ARRAY-D-26-05994). Corresponding author: Yeni Kustiyahningsih (ykustiyahningsih@trunojoyo.ac.id).
+
+**Archived release.** The release `v1.0-revision1` of this repository (the version that accompanies the revised manuscript) is permanently archived on Zenodo: https://doi.org/10.5281/zenodo.23752262
 
 RH-MVECC is applied to MSME segmentation (2,896 MSMEs, Sampang Regency, Indonesia) and checked on seven public labelled benchmarks. This repository contains the dataset-agnostic library (`rhmvecc/`), one script per experiment, all random seeds, and the raw outputs of every experiment reported in the revised manuscript.
 
@@ -444,6 +448,8 @@ Reading: this is a negative result for dominance control.
 
 `data/data_prep_2896_reconstructed.xlsx` holds the anonymised, min-max normalised MSME matrix (2,896 × 8, sequential identifiers only) in the sheets `MinMax_2896` and `MinMax_Info`. The SHA-256 of the input file is written to `summary.json`.
 
+**Archived version.** The code, the anonymised MSME matrix and the raw outputs of release `v1.0-revision1` are archived on Zenodo with a persistent DOI: https://doi.org/10.5281/zenodo.23752262. The public benchmark files are not part of the archive (see below).
+
 **Provenance.** The original records come from the Investment and One-Stop Integrated Service Office (DPMPTSP) of Sampang Regency (2,896 MSMEs; data taken on 18 September 2025). They contain owner and business names and cannot be released, so they are not included in this repository or in any release; only the anonymised matrix above is distributed. `prep_data.py` documents every preparation step (employee cap at 6, winsorisation at the upper Tukey fence on the original scale, log1p for revenue and assets, platform counts for social media and marketplace, min-max normalisation) and can be run on the original file by anyone who holds an authorised copy. The deposited matrix stores the resulting values rounded to six decimals; it reproduces every result in the manuscript (see the table under "Quick check"), and its `MinMax_Info` sheet agrees with the minima and maxima computed from the original records. Running `prep_data.py` directly on the original file gives values that differ from the deposited matrix in the third or fourth decimal (ARI 0.998 between the resulting partition and the reported one).
 
 **Marketplace coding.** In the matrix used for all reported results, the 191 records whose only marketplace is TikTok Shop are coded as two platforms (they should be one). Recoding them as one (`--marketplace-coding corrected`) leaves the selected K at 6 and gives SC 0.4043, DBI 0.9948, CHI 1337.9 and VDI 0.7786, with ARI 0.984 against the reported partition. The reported results and the deposited matrix use the original coding (`as_analyzed`, the default).
@@ -473,4 +479,8 @@ The code in this repository is released under the MIT License (see `LICENSE`). T
 
 ## Citation
 
-See `CITATION.cff` (GitHub: "Cite this repository").
+If you use this code or the deposited data, please cite the archived release:
+
+> Kustiyahningsih, Y., Rahmanita, E., Purnama, J., Damayanti, F., & Rachmad, A. (2026). *RH-MVECC: code, seeds and results* (v1.0-revision1) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23752262
+
+See also `CITATION.cff` (GitHub: "Cite this repository"). Please also cite the accompanying paper once it is published in *Array*.
